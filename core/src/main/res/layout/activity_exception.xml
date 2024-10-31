@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="exception"
+            type="org.ktc2.cokaen.wouldyouin.core.ExceptionActivity" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="visible"
+        android:background="#FFFFFF">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="불러오기를 실패 했습니다. 다시 시도 해주세요."
+            android:textSize="16sp"
+            android:gravity="center"
+            android:padding="16dp"
+            android:textColor="@android:color/darker_gray"/>
+
+        <TextView
+            android:id="@+id/error_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="오류 내용(코드)"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:padding="16dp"
+            android:textColor="@android:color/darker_gray" />
+
+        <ImageView
+            android:id="@+id/refreshImageView"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/refresh" />
+
+    </LinearLayout>
+</layout>
