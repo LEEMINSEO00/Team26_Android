@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,6 +42,10 @@ class EventDetailActivity : AppCompatActivity() {
         val eventSeats = intent.getStringExtra("event_totalSeats")
         val eventDescription = intent.getStringExtra("event_description")
         val eventImage = intent.getStringExtra("event_image")
+
+        // 백에서 가져올 경우 좌표 숫자 지우기
+        val eventLatitude = intent.getDoubleExtra("event_latitude", 35.1784)
+        val eventLongitude = intent.getDoubleExtra("event_longitude", 126.9096)
 
         binding.eventName.text = eventTitle
         binding.eventTime.text = eventStartTime
@@ -82,6 +87,11 @@ class EventDetailActivity : AppCompatActivity() {
         }, object : KakaoMapReadyCallback() {
             override fun onMapReady(kakaoMap: KakaoMap) {
                 // 인증 후 API가 정상적으로 실행될 때 호출됨
+                kakaoMap.moveCamera(
+                    com.kakao.vectormap.camera.CameraUpdateFactory.newCenterPosition(
+                        LatLng.from(eventLatitude, eventLongitude), 15
+                    )
+                )
             }
         })
     }
