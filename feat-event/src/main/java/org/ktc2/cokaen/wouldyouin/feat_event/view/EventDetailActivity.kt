@@ -34,6 +34,7 @@ class EventDetailActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_detail)
         binding.eventdetail = this
 
+        val eventHost = intent.getStringExtra("event_host_name")
         val eventTitle = intent.getStringExtra("event_title")
         val eventStartTime = intent.getStringExtra("event_startTime")
         val eventEndTime = intent.getStringExtra("event_endTime")
@@ -47,6 +48,7 @@ class EventDetailActivity : AppCompatActivity() {
         val eventLatitude = intent.getDoubleExtra("event_latitude", 35.1784)
         val eventLongitude = intent.getDoubleExtra("event_longitude", 126.9096)
 
+        binding.plannerName.text = eventHost
         binding.eventName.text = eventTitle
         binding.eventTime.text = eventStartTime
         binding.eventLocation.text = eventLocation

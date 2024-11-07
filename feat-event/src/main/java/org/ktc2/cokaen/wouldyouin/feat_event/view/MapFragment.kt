@@ -107,8 +107,17 @@ class MapFragment : Fragment() {
 
         binding.cardView.setOnClickListener {
             val intent = Intent(requireContext(), EventDetailActivity::class.java)
-            //행사 Id 또는 정보 전달 시
-            //intent.putExtra("place_name", "새벽 울림")
+            intent.putExtra("event_host_name", "새벽울림")
+            intent.putExtra("event_title", "새벽 울림")
+            intent.putExtra("event_startTime", "8월 23일 18:00")
+            intent.putExtra("event_endTime", "8월 23일 20:00")
+            intent.putExtra("event_location", "용봉로 77길 공과대학 7호관 217호")
+            intent.putExtra("event_price", "4000")
+            intent.putExtra("event_totalSeats", "35")
+            intent.putExtra("event_description", "전남대학교 공과대학 밴드 동아리 '새벽울림'이 14번째 정기 공연으로 찾아옵니다.")
+            intent.putExtra("event_image", "https://example.com/event_image.jpg")
+            intent.putExtra("event_latitude", 35.1784)
+            intent.putExtra("event_longitude", 126.9096)
             startActivity(intent)
         }
 
