@@ -28,7 +28,15 @@ class NavigationHandler @Inject constructor(
     private fun navigateToActivity(command: NavigationCommand) {
         val intent = Intent(Intent.ACTION_VIEW, buildDeepLinkUri(command))
         command.data.forEach { (key, value) ->
-            intent.putExtra(key, value)
+            when (value) {
+                is String -> intent.putExtra(key, value)
+                is Int -> intent.putExtra(key, value)
+                is Long -> intent.putExtra(key, value as Long)
+                is Boolean -> intent.putExtra(key, value)
+                is Float -> intent.putExtra(key, value)
+                is Double -> intent.putExtra(key, value)
+                // 필요한 다른 타입들 추가
+            }
         }
         applyActivityOptions(intent, command.activityOptions)
         context.startActivity(intent)
@@ -48,7 +56,7 @@ class NavigationHandler @Inject constructor(
 
         return Uri.parse(deepLink).buildUpon().apply {
             command.data.forEach { (key, value) ->
-                appendQueryParameter(key, value)
+                appendQueryParameter(key, value.toString())  // 모든 값을 toString()으로 변환
             }
         }.build()
     }

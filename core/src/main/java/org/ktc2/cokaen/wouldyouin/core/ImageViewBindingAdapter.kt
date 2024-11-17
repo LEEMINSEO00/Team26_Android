@@ -46,7 +46,7 @@ fun circleImageUrl(imageView: ImageView, path: String?, placeHolder: Drawable?) 
     Glide.with(imageView.context)
         .load(path)
         .placeholder(ph)
-        .circleCrop()
         .error(ph)
+        .circleCrop()
         .into(imageView)
 }

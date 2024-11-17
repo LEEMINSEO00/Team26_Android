@@ -20,7 +20,12 @@ class AuthPreferenceManager @Inject constructor(
         private const val KEY_MEMBER_TYPE = "member_type"
         private const val KEY_IS_WELCOME = "is_welcome"
         private const val KEY_NICKNAME = "nickname"
+        private const val KEY_PROFILE_IMAGE = "profile_image"
     }
+
+    var profileImage: String?
+        get() = prefs.getString(KEY_PROFILE_IMAGE, null)
+        set(value) = prefs.edit { putString(KEY_PROFILE_IMAGE, value) }
 
     var phone: String?
         get() = prefs.getString(KEY_PHONE, null)
@@ -95,6 +100,7 @@ class AuthPreferenceManager @Inject constructor(
             remove(KEY_TOKEN)      // 토큰 삭제
             remove(KEY_MEMBER_ID)  // 멤버 ID 삭제
             remove(KEY_MEMBER_TYPE)// 멤버 타입 삭제
+            remove(KEY_PROFILE_IMAGE)
         }
     }
 }

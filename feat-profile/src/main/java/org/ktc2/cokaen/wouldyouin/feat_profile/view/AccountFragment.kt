@@ -56,6 +56,12 @@ class AccountFragment : Fragment() {
             logout.setOnClickListener{
                 logout()
             }
+
+            nickname.text = authPrefs.nickname?: "사용자 이름을 찾지 못했습니다."
+
+            if (authPrefs.profileImage != null) {
+                imageUrl = authPrefs.profileImage
+            }
         }
     }
 

@@ -24,7 +24,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:scaleType="fitXY"
-            imageUrl="@{postImageUrl"/>
+            imageUrl="@{postImageUrl}"/>
 
         <TextView
             android:id="@+id/title"

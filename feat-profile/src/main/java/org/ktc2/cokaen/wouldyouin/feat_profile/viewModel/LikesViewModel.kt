@@ -49,10 +49,10 @@ class LikesViewModel @Inject constructor(
         }
     }
 
-    fun toggleLike(curatorId: Long) {
+    fun toggleLike(memberId: Long, memberType: MemberType) {
         viewModelScope.launch {
             try {
-                val response = likesRepository.postLike(curatorId, MemberType.curator)
+                val response = likesRepository.postLike(memberId, memberType)
                 _isLiked.value = response.liked
             } catch (e: Exception) {
                 Log.e("LikesViewModel", "Failed to toggle like", e)

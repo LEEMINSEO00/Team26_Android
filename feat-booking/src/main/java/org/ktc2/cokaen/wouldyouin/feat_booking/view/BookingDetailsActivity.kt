@@ -36,7 +36,7 @@ class BookingDetailsActivity : AppCompatActivity() {
         // 그 다음 데이터 로드
         loadReservationData()
 
-        setupClickListeners()
+
     }
 
     private fun setupObservers() {
@@ -56,6 +56,14 @@ class BookingDetailsActivity : AppCompatActivity() {
                     btnBack.setOnClickListener {
                         finish()
                     }
+
+//                    cancelButton.setOnClickListener {
+//                        intent.getStringExtra("reservationId")?.toLongOrNull()?.let { id ->
+//                            viewModel.deleteReservation(reservation.id)
+//                            ToastUtils.showShortToast(this,"예매 취소가 완료되었습니다.")
+//                            finish()
+//                        }
+//                    }
                 }
             }
         }
@@ -77,14 +85,4 @@ class BookingDetailsActivity : AppCompatActivity() {
             finish()
         }
     }
-
-//    private fun setupClickListeners() {
-//        binding.cancelButton.setOnClickListener {
-//            intent.getStringExtra("reservationId")?.toLongOrNull()?.let { id ->
-//                viewModel.deleteReservation(id)
-//                ToastUtils.showShortToast(this,"예매 취소가 완료되었습니다.")
-//                finish()
-//            }
-//        }
-//    }
 }

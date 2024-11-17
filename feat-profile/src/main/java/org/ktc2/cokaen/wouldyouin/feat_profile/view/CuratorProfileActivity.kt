@@ -176,7 +176,7 @@ class CuratorProfileActivity : AppCompatActivity() {
         }
 
         binding.likeButton.setOnClickListener {
-            likesViewModel.toggleLike(curatorId)
+            likesViewModel.toggleLike(curatorId, MemberType.curator)
         }
     }
 

@@ -11,6 +11,8 @@ import kotlinx.coroutines.launch
 import org.ktc2.cokaen.wouldyouin.core.ToastUtils
 import org.ktc2.cokaen.wouldyouin.data.model.ReservationResponse
 import org.ktc2.cokaen.wouldyouin.network.repository.ReservationAPIRetrofitRepository
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,21 +54,47 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
-    fun deleteReservation(reservationId: Long) {
+    // ViewModel에서:
+    fun deleteReservation(reservationId: Long, eventStartTime: List<String>) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val success = reservationRepository.deleteReservation(reservationId)
-                if (success) {
-                    ToastUtils.showShortToast(context, "예매가 취소되었습니다.")
+                val startDateTime = parseEventDate(eventStartTime)
+                val currentDateTime = LocalDateTime.now()
+                val hoursDifference = ChronoUnit.HOURS.between(currentDateTime, startDateTime)
+
+                if (hoursDifference >= 3) {
+                    val success = reservationRepository.deleteReservation(reservationId)
+                    if (success) {
+                        ToastUtils.showShortToast(context, "예매가 취소되었습니다.")
+                    } else {
+                        ToastUtils.showShortToast(context, "예매 취소에 실패했습니다. 다시 시도해 주세요")
+                    }
                 } else {
-                    ToastUtils.showShortToast(context, "예매 취소에 실패했습니다. 다시 시도해 주세요")
+                    ToastUtils.showShortToast(context, "공연 시작 3시간 전까지만 예매 취소가 가능합니다.")
                 }
             } catch (e: Exception) {
                 ToastUtils.showShortToast(context, e.message ?: "예매 취소에 실패했습니다. 다시 시도해 주세요")
             } finally {
                 _isLoading.value = false
             }
+        }
+    }
+
+    private fun parseEventDate(dateList: List<String>): LocalDateTime {
+        return try {
+            require(dateList.size >= 5) { "Date list must contain at least 5 elements (year, month, day, hour, minute)" }
+
+            val year = dateList[0].toInt()
+            val month = dateList[1].toInt()
+            val day = dateList[2].toInt()
+            val hour = dateList[3].toInt()
+            val minute = dateList[4].toInt()
+
+            LocalDateTime.of(year, month, day, hour, minute)
+        } catch (e: Exception) {
+            Log.e("BookingViewModel", "Error parsing date from list: $dateList", e)
+            throw e  // 날짜 파싱 실패시 예외를 throw하여 적절한 에러 메시지 표시
         }
     }
 }

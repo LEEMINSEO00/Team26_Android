@@ -10,7 +10,7 @@ data class ActivityNavigationOptions(
 
 data class NavigationCommand(
     val destination: NavigationDestination,
-    val data: Map<String, String> = emptyMap(),
+    val data: Map<String, Any> = emptyMap(),
     val navOptions: Int? = null,
     val activityOptions: ActivityNavigationOptions? = null
 )

@@ -83,6 +83,10 @@ class CurationDetailActivity : AppCompatActivity() {
             orientation = LinearLayoutManager.HORIZONTAL
         }
 
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+
         binding.curatorProfile.setOnClickListener {
             val curatorId = viewModel.curation.value?.curator?.curatorId
             if (curatorId != null) {
@@ -137,16 +141,14 @@ class CurationDetailActivity : AppCompatActivity() {
     }
 
     private fun startEventDetailsActivity(eventId: Long) {
-        navigationUtil.navigate(
-            NavigationCommand(
-                destination = NavigationDestination.Activity(DeepLinkDestinations.DETAIL_EVENT_ACTIVITY),
-                activityOptions = ActivityNavigationOptions(
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK,
-                    clearTop = true
-                ),
-                data = mapOf("eventId" to eventId.toString())
+        val command = NavigationCommand(
+            destination = NavigationDestination.Activity(DeepLinkDestinations.DETAIL_EVENT_ACTIVITY),
+            data = mapOf("event_id" to eventId),
+            activityOptions = ActivityNavigationOptions(
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
             )
         )
+        navigationUtil.navigate(command)
     }
 
     private fun startCuratorActivity(curatorId: Long) {

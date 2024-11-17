@@ -71,6 +71,7 @@ class LoginViewModel @Inject constructor(
                                 gender = profile.gender
                                 nickname = profile.nickname
                                 memberId = profile.memberId
+                                profileImage = profile.profileUrl
                             }
                             true
                         } else {
