@@ -49,8 +49,8 @@ interface CurationAPIRetrofitService {
         @Query("lastId") lastId: Long = Long.MAX_VALUE
     ): Response<ApiResponseBodyCurationSliceResponse>
 
-    @DELETE("/api/curations/curators/{curationId}")
+    @DELETE("/api/curations/{curationId}")
     suspend fun deleteCuration(
-        @Path("curationId") curatorId: Long
+        @Path("curationId") curationId: Long
     ): Response<ResponseBody>
 }

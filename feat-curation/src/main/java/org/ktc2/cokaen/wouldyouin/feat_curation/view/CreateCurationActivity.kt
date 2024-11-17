@@ -96,11 +96,17 @@ class CreateCurationActivity : AppCompatActivity() {
     }
 
     private fun setupInitialState() {
-        val curationId = if (intent.hasExtra("curationId")) {
-            intent.getLongExtra("curationId", -1L)
-        } else {
-            null
-        }
+        val deepLinkId = intent.data?.getQueryParameter("curationId")
+        Log.d("CreateCuration", "DeepLink curationId: $deepLinkId")
+
+        val curationId = deepLinkId?.toLongOrNull()
+            ?: if (intent.hasExtra("curationId")) {
+                intent.getLongExtra("curationId", -1L)
+            } else {
+                null
+            }
+
+        Log.d("CreateCuration", "Final curationId: $curationId")
 
         when (curationId) {
             null -> {
@@ -110,7 +116,7 @@ class CreateCurationActivity : AppCompatActivity() {
             }
             -1L -> {
                 // 잘못된 ID 값이 전달된 경우
-                ToastUtils.showShortToast(this@CreateCurationActivity, "잘못된 접근입니다.")
+                ToastUtils.showShortToast(this@CreateCurationActivity, "잘못된 접근입니다. (Invalid ID)")
                 finish()
             }
             else -> {
@@ -118,15 +124,17 @@ class CreateCurationActivity : AppCompatActivity() {
                 viewModel.viewModelScope.launch {
                     try {
                         val localCuration = viewModel.getCurationFromLocal(curationId)
+                        Log.d("CreateCuration", "Retrieved curation: $localCuration")  // 조회된 큐레이션 로그
                         if (localCuration != null) {
                             isEditMode = true
                             viewModel.initialize(localCuration)
                         } else {
-                            ToastUtils.showShortToast(this@CreateCurationActivity, "잘못된 접근입니다.")
+                            ToastUtils.showShortToast(this@CreateCurationActivity, "잘못된 접근입니다. (No Data)")
                             finish()
                         }
                     } catch (e: Exception) {
-                        ToastUtils.showShortToast(this@CreateCurationActivity, "잘못된 접근입니다.")
+                        Log.e("CreateCuration", "Error loading curation", e)  // 에러 로그 추가
+                        ToastUtils.showShortToast(this@CreateCurationActivity, "잘못된 접근입니다. (Error: ${e.message})")
                         finish()
                     }
                 }
@@ -194,6 +202,10 @@ class CreateCurationActivity : AppCompatActivity() {
             // 이벤트 데이터
             viewModel.eventDataList.observe(this@CreateCurationActivity) { events ->
                 selectedEventsAdapter.submitList(events)
+            }
+
+            isFormValid.observe(this@CreateCurationActivity) { isValid ->
+                binding.btnRegister.isEnabled = isValid
             }
         }
         viewModel.curationBlocks.observe(this) { blocks ->
@@ -433,23 +445,6 @@ class CreateCurationActivity : AppCompatActivity() {
         })
     }
 
-
-    private fun checkCurationCardTitle() {
-        // 빈칸, "" 안됨
-    }
-
-    private fun checkCurationCardBody() {
-        // 20자 이상, 1000자 이내
-    }
-
-    private fun checkCurationCardImages() {
-        // 각 이미지 url 원소 담은 배열 길이가 5 초과되면 안됨
-    }
-
-    private fun checkCurationCardLength() {
-        // 큐레이션 카드 개수 10 초과되면 안됨
-    }
-
     private val imageResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -523,14 +518,6 @@ class CreateCurationActivity : AppCompatActivity() {
         val result = c?.getString(index!!)
         c?.close()
         return result!!
-    }
-
-    private fun performSearch(query: String) {
-        if (query.isNotEmpty()) {
-
-        } else {
-            Toast.makeText(this, "검색어를 입력하세요.", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun EditText.addValidationWatcher(validateFn: (String) -> ValidationResult) {

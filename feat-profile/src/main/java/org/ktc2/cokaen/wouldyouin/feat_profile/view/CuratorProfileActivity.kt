@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ktc2.cokaen.wouldyouin.core.ToastUtils
 import org.ktc2.cokaen.wouldyouin.core_navigation.ActivityNavigationOptions
@@ -69,7 +70,7 @@ class CuratorProfileActivity : AppCompatActivity() {
         profileViewModel.memberProfile.observe(this) { memberResponse ->
             memberResponse?.data?.let { member ->
                 binding.nickname.text = member.nickname
-                binding.role.text = member.memberType.toString()
+                binding.role.text = member.memberType
                 binding.likes.text = member.likes.toString()
                 binding.intro.text = member.intro
                 binding.emali.text = member.email
@@ -176,7 +177,11 @@ class CuratorProfileActivity : AppCompatActivity() {
         }
 
         binding.likeButton.setOnClickListener {
-            likesViewModel.toggleLike(curatorId, MemberType.curator)
+            lifecycleScope.launch {
+                likesViewModel.toggleLike(curatorId, MemberType.curator)
+                delay(300)
+                profileViewModel.fetchMemberProfile(curatorId, this@CuratorProfileActivity)
+            }
         }
     }
 
@@ -188,5 +193,4 @@ class CuratorProfileActivity : AppCompatActivity() {
         }
         binding.likeButton.setColorFilter(color, PorterDuff.Mode.SRC_IN)
     }
-
 }

@@ -127,17 +127,18 @@ class CreateCurationViewModel @Inject constructor(
         if (currentBlocks.getOrNull(position)?.title != newTitle) {
             currentBlocks.getOrNull(position)?.let { block ->
                 currentBlocks[position] = block.copy(title = newTitle)
+                Log.d("BlockUpdate", "Title updated - position: $position, new title: $newTitle")
                 _curationBlocks.value = currentBlocks
             }
         }
     }
 
-    // 블록 내용 업데이트
     fun updateBlockBody(position: Int, newBody: String) {
         val currentBlocks = _curationBlocks.value.orEmpty().toMutableList()
         if (currentBlocks.getOrNull(position)?.body != newBody) {
             currentBlocks.getOrNull(position)?.let { block ->
                 currentBlocks[position] = block.copy(body = newBody)
+                Log.d("BlockUpdate", "Body updated - position: $position, new body: $newBody")
                 _curationBlocks.value = currentBlocks
             }
         }
@@ -340,7 +341,18 @@ class CreateCurationViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val hashtags = _hashtags.value?.split(",")?.map { it.trim() } ?: listOf()
+                val hashtags = _hashtags.value?.let { value ->
+                    if (value.startsWith("#")) {
+                        value.substring(1) // 첫 번째 # 제거
+                            .split("#")
+                            .map { it.trim() }
+                            .filterNot { it.isEmpty() }
+                    } else {
+                        value.split("#")
+                            .map { it.trim() }
+                            .filterNot { it.isEmpty() }
+                    }
+                } ?: listOf()
                 val curationCards = _curationBlocks.value?.map { it.toCurationCardRequest() } ?: listOf()
                 val eventIds = _eventDataList.value?.map { it.eventId } ?: listOf()
 
@@ -453,6 +465,17 @@ class CreateCurationViewModel @Inject constructor(
                 !block.title.isNullOrBlank() && !block.body.isNullOrBlank()
             } ?: false
             val hasAtLeastOneBlock = _curationBlocks.value?.isNotEmpty() ?: false
+
+            // 디버깅을 위한 로그 추가
+            Log.d("FormValidation", """
+            hasTitle: $hasTitle (${_title.value})
+            hasContent: $hasContent (${_content.value})
+            hasArea: $hasArea (${_selectedRegion.value})
+            hasHashtags: $hasHashtags (${_hashtags.value})
+            hasValidBlocks: $hasValidBlocks
+            hasAtLeastOneBlock: $hasAtLeastOneBlock
+            blocks: ${_curationBlocks.value?.map { "title: ${it.title}, body: ${it.body}" }}
+        """.trimIndent())
 
             value = hasTitle && hasContent && hasArea && hasHashtags &&
                     hasValidBlocks && hasAtLeastOneBlock

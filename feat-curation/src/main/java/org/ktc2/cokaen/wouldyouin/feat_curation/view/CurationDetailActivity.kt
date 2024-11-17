@@ -61,11 +61,11 @@ class CurationDetailActivity : AppCompatActivity() {
 
                 true
             }
-            R.id.action_edit -> {
-
-
-                true
-            }
+//            R.id.action_edit -> {
+//
+//
+//                true
+//            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -97,7 +97,11 @@ class CurationDetailActivity : AppCompatActivity() {
         }
 
         viewModel.curation.observe(this) { curation ->
-            viewModel.curation.value?.curator?.curatorId?.let { checkEditable(it) }
+            viewModel.curation.value?.curator?.curatorId?.let {
+                if (curation != null) {
+                    checkEditable(it, curation.id)
+                }
+            }
             if (curation != null) {
                 binding.tvIntro.text = curation.curator.intro
             }
@@ -168,22 +172,29 @@ class CurationDetailActivity : AppCompatActivity() {
             destination = NavigationDestination.Activity(DeepLinkDestinations.CREATE_CURATION_DEEPLINK),
             data = mapOf("curationId" to curationId.toString()),
             activityOptions = ActivityNavigationOptions(
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
             )
         )
         navigationUtil.navigate(command)
 
     }
 
-    private fun checkEditable(curationId: Long) {
+    private fun checkEditable(curatorId: Long, curationId: Long) {
         val memberId = authPrefs.memberId
-        val isEditable = memberId != null && curationId == memberId
+        val isEditable = memberId != null && curatorId == memberId
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
 
         if (isEditable) {
             setSupportActionBar(toolbar)
             supportActionBar?.setDisplayShowTitleEnabled(false)
+
+            // 삭제 성공 시 Activity 종료
+            viewModel.isDeleted.observe(this) { isDeleted ->
+                if (isDeleted) {
+                    finish()
+                }
+            }
 
             toolbar.inflateMenu(R.menu.curation_toolbar_menu)
             toolbar.setOnMenuItemClickListener { menuItem ->
@@ -192,10 +203,10 @@ class CurationDetailActivity : AppCompatActivity() {
                         viewModel.deleteCuration(curationId)
                         true
                     }
-                    R.id.action_edit -> {
-                        startCreateCurationActivity(curationId)
-                        true
-                    }
+//                    R.id.action_edit -> {
+//                        startCreateCurationActivity(curationId)
+//                        true
+//                    }
                     else -> false
                 }
             }

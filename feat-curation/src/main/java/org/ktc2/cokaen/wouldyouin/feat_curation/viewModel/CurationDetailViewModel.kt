@@ -37,6 +37,9 @@ class CurationDetailViewModel @Inject constructor(
     private val _hashtags = MutableLiveData<List<String>>()
     val hashtags: LiveData<List<String>> = _hashtags
 
+    private val _isDeleted = MutableLiveData<Boolean>()
+    val isDeleted: LiveData<Boolean> = _isDeleted
+
     fun loadCurationDetail(curationId: Long) {
         if (isLoading.value == true) return
 
@@ -61,6 +64,23 @@ class CurationDetailViewModel @Inject constructor(
     }
 
     fun deleteCuration(curationId: Long) {
+        if (isLoading.value == true) return
 
+        _isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val isDeleted = curationRepository.deleteCuration(curationId)
+                if (isDeleted) {
+                    ToastUtils.showShortToast(context, "큐레이션이 삭제되었습니다.")
+                    // 삭제 성공 시 Activity 종료를 위한 LiveData
+                    _isDeleted.value = true
+                }
+            } catch (e: Exception) {
+                ToastUtils.showShortToast(context, e.message ?: "큐레이션 삭제에 실패했습니다. 다시 시도해주세요.")
+                Log.e("CurationDetailViewModel", "Error deleting curation", e)
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 }

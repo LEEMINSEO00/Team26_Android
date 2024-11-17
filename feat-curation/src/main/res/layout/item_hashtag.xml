@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-            name="hashtag"
-            type="String" />
+
     </data>
 
     <TextView
@@ -13,7 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text="@{hashtag}"
         android:background="@drawable/rounded_background"
         android:textSize="16sp"
         tools:text="#hashtag" />

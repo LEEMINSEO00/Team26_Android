@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ktc2.cokaen.wouldyouin.core_navigation.ActivityNavigationOptions
 import org.ktc2.cokaen.wouldyouin.core_navigation.DeepLinkDestinations
@@ -56,7 +57,7 @@ class HostProfileActivity : AppCompatActivity() {
         // ViewModel의 데이터를 관찰하여 UI 업데이트
         profileViewModel.memberProfile.observe(this) { memberResponse ->
             memberResponse?.data?.let { member ->
-                Log.d("HostProfileActivity", "Member data fetched: ${member.nickname}")
+                Log.d("HostProfileActivity", "Member data fetched: ${member.hashtag}")
                 binding.nickname.text = member.nickname
                 binding.role.text = member.memberType
                 binding.likes.text = member.likes.toString()
@@ -111,7 +112,11 @@ class HostProfileActivity : AppCompatActivity() {
         }
 
         binding.likeButton.setOnClickListener {
-            likesViewModel.toggleLike(hostId, MemberType.host)
+            lifecycleScope.launch {
+                likesViewModel.toggleLike(hostId, MemberType.host)
+                delay(300)
+                profileViewModel.fetchMemberProfile(hostId, this@HostProfileActivity)
+            }
         }
     }
 

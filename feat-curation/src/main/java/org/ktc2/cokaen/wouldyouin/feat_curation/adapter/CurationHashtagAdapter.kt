@@ -28,7 +28,7 @@ class CurationHashtagAdapter : RecyclerView.Adapter<CurationHashtagAdapter.Hasht
 
     inner class HashtagViewHolder(private val binding: ItemHashtagBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(hashtag: String) {
-            binding.hashtag = hashtag  // 데이터 바인딩 변수에 직접 할당
+            binding.tvHashtag.text = "${hashtag}"  // 데이터 바인딩 변수에 직접 할당
             binding.executePendingBindings()  // 바인딩 즉시 실행
         }
     }
