@@ -1,8 +1,10 @@
 package org.ktc2.cokaen.wouldyouin.feat_booking.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import org.ktc2.cokaen.wouldyouin.core.DateTimeUtils
 import org.ktc2.cokaen.wouldyouin.data.model.CurationResponse
 import org.ktc2.cokaen.wouldyouin.data.model.ReservationResponse
 import org.ktc2.cokaen.wouldyouin.feat_booking.databinding.ItemReservationBinding
@@ -20,13 +22,20 @@ class BookingAdapter(
     inner class BookingViewHolder(private val binding: ItemReservationBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(reservation: ReservationResponse) {
             binding.eventTitle.text = reservation.event.title
-            binding.reservationDate.text = reservation.reservationDate.toString()
-            binding.eventDate.text = reservation.event.startTime.toString()
+
+            val reservationDate = DateTimeUtils.formatDetailTimeString(reservation.reservationDate)
+            val eventDate = DateTimeUtils.formatDetailTimeString(reservation.event.startTime)
+            binding.reservationDate.text = reservationDate
+            binding.eventStartTime.text = eventDate
+            Log.d("Binding", reservation.event.location.detailAddress)
+            binding.eventLocation.text = reservation.event.location.detailAddress
             binding.imageUrl = reservation.event.thumbnailUrl
 
             binding.root.setOnClickListener {
                 onItemClickListener?.invoke(reservation)
             }
+
+            binding.executePendingBindings()
         }
     }
 

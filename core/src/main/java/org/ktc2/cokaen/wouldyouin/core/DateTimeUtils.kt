@@ -19,4 +19,32 @@ object DateTimeUtils {
 
         return "$year.$month.$day, $amPm $formattedHour:$minute"
     }
+
+    fun formatDetailTimeString(dateTimeList: List<String>): String {
+        require(dateTimeList.size in listOf(5, 7)) {
+            "List must contain 5 elements (year,month,day,hour,minute) or 7 elements (with seconds,nanoseconds)"
+        }
+
+        val year = dateTimeList[0].padStart(4, '0')
+        val month = dateTimeList[1].padStart(2, '0')
+        val day = dateTimeList[2].padStart(2, '0')
+        val hour = dateTimeList[3].toInt()
+        val minute = dateTimeList[4].padStart(2, '0')
+
+        val seconds = if (dateTimeList.size > 5) {
+            dateTimeList[5].padStart(2, '0')
+        } else ""
+
+        val amPm = if (hour < 12) "AM" else "PM"
+        val formattedHour = when {
+            hour == 0 -> "12"
+            hour > 12 -> (hour - 12).toString().padStart(2, '0')
+            else -> hour.toString().padStart(2, '0')
+        }
+
+        return when (dateTimeList.size) {
+            7 -> "$year.$month.$day, $amPm $formattedHour:$minute:$seconds"
+            else -> "$year.$month.$day, $amPm $formattedHour:$minute"
+        }
+    }
 }

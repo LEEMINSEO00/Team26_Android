@@ -1,6 +1,8 @@
 package org.ktc2.cokaen.wouldyouin.feat_booking.view
 
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -10,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
 import org.ktc2.cokaen.wouldyouin.core.DateTimeUtils
+import org.ktc2.cokaen.wouldyouin.core.ToastUtils
 import org.ktc2.cokaen.wouldyouin.feat_booking.R
 import org.ktc2.cokaen.wouldyouin.feat_booking.databinding.ActivityBookingDetailsBinding
 import org.ktc2.cokaen.wouldyouin.feat_booking.viewModel.BookingDetailsViewModel
@@ -19,8 +22,6 @@ class BookingDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBookingDetailsBinding
     private val viewModel: BookingDetailsViewModel by viewModels()
 
-    var reservationId: String? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBookingDetailsBinding.inflate(layoutInflater)
@@ -29,53 +30,61 @@ class BookingDetailsActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        //loadCurationDetail()
-        val reservationId = intent.getLongExtra("reservationId", -1L)
-        if (reservationId != -1L) {
+        // Observer 설정을 먼저 합니다
+        setupObservers()
+
+        // 그 다음 데이터 로드
+        loadReservationData()
+
+        setupClickListeners()
+    }
+
+    private fun setupObservers() {
+        viewModel.reservation.observe(this) { reservation ->
+            reservation?.let {
+                binding.apply {
+                    imageUrl = it.event.thumbnailUrl
+                    eventName.text = it.event.title
+                    eventLocation.text = it.event.location.detailAddress
+                    eventDate.text = DateTimeUtils.formatDetailTimeString(it.event.startTime)
+                    paymentDate.text = DateTimeUtils.formatDetailTimeString(it.reservationDate)
+                    paymentAmount.text = "₩${it.price}"
+                    reservationNumber.text = it.id.toString()
+                    bookerName.text = it.member.nickname
+                    ticketQuantity.text = it.quantity.toString()
+
+                    btnBack.setOnClickListener {
+                        finish()
+                    }
+                }
+            }
+        }
+
+        viewModel.isLoading.observe(this) { isLoading ->
+            // 로딩 상태에 따른 UI 처리
+            binding.progressBar?.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+    }
+
+    private fun loadReservationData() {
+        val reservationId = intent.getStringExtra("reservationId")?.toLongOrNull()
+        Log.d("DetailBooking", "ReservationId: $reservationId")
+
+        if (reservationId != null && reservationId != -1L) {
             viewModel.loadReservationDetail(reservationId)
         } else {
             Toast.makeText(this, "예매 내역을 찾을 수 없습니다. 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
             finish()
         }
-
-        viewModel.reservation.observe(this, Observer { reservation ->
-            reservation?.let {
-                binding.imageUrl = reservation.event.thumbnailUrl
-                binding.eventName.text = reservation.event.title
-                binding.eventLocation.text = reservation.event.location.detailAddress
-                binding.eventDate.text = DateTimeUtils.formatDateTimeString(reservation.event.startTime)
-                binding.paymentDate.text = DateTimeUtils.formatDateTimeString(reservation.reservationDate)
-                binding.paymentAmount.text = "₩${reservation.price}"
-                binding.reservationNumber.text = reservation.id.toString()
-                binding.bookerName.text = reservation.member.nickname
-                binding.ticketQuantity.text = reservation.quantity.toString()
-            }
-        })
-
-        binding.cancelButton.setOnClickListener {
-            viewModel.deleteReservation(reservationId)
-            finish()
-        }
-
-        /*
-        binding.cancelButton.setOnClickListener {
-            try {
-                reservationId?.toLong()?.let { it1 -> viewModel.deleteReservation(it1) }
-            } catch (_: Exception) {
-                Toast.makeText(this, "잘못된 접근입니다. 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
-            }
-
-        }*/
     }
 
-    /*
-    private fun loadCurationDetail() {
-        reservationId = intent.data?.getQueryParameter("reservationID")
-        reservationId?.let { id ->
-            viewModel.loadReservationDetail(id.toLong())
-        } ?: run {
-            Toast.makeText(this, "예매 내역을 찾을 수 없습니다. 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
-            finish()
-        }
-    }*/
+//    private fun setupClickListeners() {
+//        binding.cancelButton.setOnClickListener {
+//            intent.getStringExtra("reservationId")?.toLongOrNull()?.let { id ->
+//                viewModel.deleteReservation(id)
+//                ToastUtils.showShortToast(this,"예매 취소가 완료되었습니다.")
+//                finish()
+//            }
+//        }
+//    }
 }

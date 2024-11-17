@@ -23,6 +23,7 @@
             android:id="@+id/eventImage"
             android:layout_width="80dp"
             android:layout_height="120dp"
+            android:scaleType="centerCrop"
             android:contentDescription="Poster"
             android:layout_marginEnd="8dp"
             imageUrl="@{imageUrl}" />
@@ -36,7 +37,6 @@
                 android:id="@+id/eventTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{reservation.event.title}"
                 android:textStyle="bold"
                 android:layout_marginTop="5dp"
                 tools:text="Title"
@@ -44,10 +44,9 @@
                 android:textColor="#000000" />
 
             <TextView
-                android:id="@+id/eventDate"
+                android:id="@+id/event_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{reservation.event.location.detailAddress}"
                 tools:text="광주 문화전당로 보헤미안 소극장"
                 android:layout_marginTop="5dp"
                 android:textSize="14sp"
@@ -57,7 +56,6 @@
                 android:id="@+id/eventStartTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{reservation.event.startTime.toString()}"
                 android:layout_marginTop="5dp"
                 android:maxLines="1"
                 tools:text="공연날짜"
@@ -70,7 +68,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="@{reservation.reservationDate.toString()}"
                 android:textSize="14sp"
                 tools:text="예매날짜"
                 android:textColor="#666666" />

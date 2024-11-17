@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import org.ktc2.cokaen.wouldyouin.core.DateTimeUtils
 import org.ktc2.cokaen.wouldyouin.data.model.ReservationResponse
 import org.ktc2.cokaen.wouldyouin.feat_booking.databinding.BookingCardItemBinding
 
@@ -47,12 +48,12 @@ class BookingViewPagerAdapter: ListAdapter<ReservationResponse, BookingViewPager
 
         fun bind(item: ReservationResponse) {
             binding.apply {
-                eventDate.text = item.event.startTime.toString()
+                eventDate.text = DateTimeUtils.formatDetailTimeString(item.event.startTime)
                 eventName.text = item.event.title
                 eventLocation.text = item.event.location.detailAddress
                 imageUrl = item.event.thumbnailUrl
-                ticketCount.text = "${item.quantity}, ₩${item.price}"
-                reservationId.text = item.id.toString()
+                ticketCount.text = "${item.quantity}인, ₩${item.price}"
+                reservationId.text = "예매번호: ${item.id}"
 
                 root.setOnClickListener {
                     onItemClickListener?.invoke(item)

@@ -32,6 +32,7 @@ open class ReservationAPIRetrofitRepository @Inject constructor(
                 response.isSuccessful -> {
                     response.body()?.let { body ->
                         if (body.success) {
+                            Log.d("Reservation  List Body", body.data.toString())
                             body.data
                         } else {
                             throw ServerCommonAPIRetrofitRepository.CustomException(
@@ -75,30 +76,50 @@ open class ReservationAPIRetrofitRepository @Inject constructor(
 
     suspend fun getReservationDetails(reservationId: Long): ReservationResponse {
         try {
+            Log.d("DetailBooking", "Repository - Starting API call")
+
+            // retrofitService가 null이 아닌지 확인
+            Log.d("DetailBooking", "RetrofitService instance: $retrofitService")
+
             val response = retrofitService.getReservation(reservationId)
+            Log.d("DetailBooking", "Repository - API call completed with response: $response")
+
             return when {
                 response.isSuccessful -> {
-                    response.body()?.let { body ->
-                        if (body.success) {
-                            body.data
+                    val body = response.body()
+                    Log.d("DetailBooking", "Response body: $body")
+
+                    body?.let {
+                        if (it.success) {
+                            it.data
                         } else {
                             throw ServerCommonAPIRetrofitRepository.CustomException(
-                                body.message ?: "예매 상세 정보 조회에 실패했습니다"
+                                it.message ?: "예매 상세 정보 조회에 실패했습니다"
                             )
                         }
                     } ?: throw ServerCommonAPIRetrofitRepository.CustomException("서버로부터 유효한 응답을 받지 못했습니다")
                 }
                 else -> {
                     val errorBody = response.errorBody()?.string()
+                    Log.e("DetailBooking", "Error response: ${response.code()}, Error body: $errorBody")
                     throw ServerCommonAPIRetrofitRepository.CustomException("서버 응답 오류: ${response.code()}")
                 }
             }
         } catch (e: Exception) {
-            Log.e("GetReservationDetail", "Fetch failed", e)
+            Log.e("DetailBooking", "Repository exception", e)
             throw when (e) {
-                is IOException -> ServerCommonAPIRetrofitRepository.CustomException("네트워크 연결을 확인해주세요")
-                is HttpException -> ServerCommonAPIRetrofitRepository.CustomException("서버 통신 오류: ${e.code()}")
-                else -> e
+                is IOException -> {
+                    Log.e("DetailBooking", "Network error", e)
+                    ServerCommonAPIRetrofitRepository.CustomException("네트워크 연결을 확인해주세요")
+                }
+                is HttpException -> {
+                    Log.e("DetailBooking", "HTTP error: ${e.code()}", e)
+                    ServerCommonAPIRetrofitRepository.CustomException("서버 통신 오류: ${e.code()}")
+                }
+                else -> {
+                    Log.e("DetailBooking", "Unknown error", e)
+                    e
+                }
             }
         }
     }

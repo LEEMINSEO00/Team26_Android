@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import org.ktc2.cokaen.wouldyouin.core.DateTimeUtils
 import org.ktc2.cokaen.wouldyouin.data.model.ReviewEventResponse
 import org.ktc2.cokaen.wouldyouin.feat_profile.databinding.ItemPendingReviewBinding
 
@@ -37,8 +38,11 @@ class PendingReviewAdapter(
                 // review 객체를 직접 바인딩 변수에 할당
                 this.review = review
 
+                val startTime = DateTimeUtils.formatDateTimeString(review.startTime)
+                eventDateTextView.text = startTime
+
                 // 클릭 리스너 설정
-                root.setOnClickListener {
+                writeReviewButton.setOnClickListener {
                     onItemClick(review.eventId)
                 }
 

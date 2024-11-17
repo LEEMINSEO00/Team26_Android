@@ -45,8 +45,8 @@ class BookingFragmentViewModel @Inject constructor(
         viewModelScope.launch {
             bookings.collect { reservationList ->
                 val processed = reservationList
-                    .filter { !isEventEnded(it.event.startTime.toString()) }
-                    .sortedBy { parseEventDate(it.event.startTime.toString()) }
+                    .filter { !isEventEnded(it.event.startTime) }
+                    .sortedBy { parseEventDate(it.event.startTime) }
                     .distinctBy { it.id }
                 _processedBookings.value = processed
             }
@@ -78,7 +78,7 @@ class BookingFragmentViewModel @Inject constructor(
         }
     }
 
-    private fun isEventEnded(eventDate: String): Boolean {
+    private fun isEventEnded(eventDate: List<String>): Boolean {
         return try {
             val parsedDate = parseEventDate(eventDate)
             parsedDate.isBefore(LocalDateTime.now())
@@ -88,13 +88,19 @@ class BookingFragmentViewModel @Inject constructor(
         }
     }
 
-    private fun parseEventDate(dateStr: String): LocalDateTime {
+    private fun parseEventDate(dateList: List<String>): LocalDateTime {
         return try {
-            // 여기서는 날짜 형식을 예시로 들었습니다. 실제 데이터의 형식에 맞게 수정해야 합니다.
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-            LocalDateTime.parse(dateStr, formatter)
+            require(dateList.size >= 5) { "Date list must contain at least 5 elements (year, month, day, hour, minute)" }
+
+            val year = dateList[0].toInt()
+            val month = dateList[1].toInt()
+            val day = dateList[2].toInt()
+            val hour = dateList[3].toInt()
+            val minute = dateList[4].toInt()
+
+            LocalDateTime.of(year, month, day, hour, minute)
         } catch (e: Exception) {
-            Log.e("BookingViewModel", "Error parsing date: $dateStr", e)
+            Log.e("BookingViewModel", "Error parsing date from list: $dateList", e)
             LocalDateTime.now() // 파싱 실패시 현재 시간 반환
         }
     }

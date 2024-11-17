@@ -27,20 +27,27 @@ class BookingDetailsViewModel @Inject constructor(
     val reservation: LiveData<ReservationResponse?> = _reservation
 
     fun loadReservationDetail(reservationId: Long) {
-        if (isLoading.value == true) return
+        Log.d("DetailBooking", "LoadReservationDetail started with id: $reservationId")
+        if (isLoading.value == true) {
+            Log.d("DetailBooking", "Already loading, returning")
+            return
+        }
 
         _isLoading.value = true
+        Log.d("DetailBooking", "Starting coroutine")
         viewModelScope.launch {
             try {
+                Log.d("DetailBooking", "About to call repository")
                 val reservationDetail = reservationRepository.getReservationDetails(reservationId)
-
-                // CurationResponse 값을 변수에 적용
+                Log.d("DetailBooking", "Repository call successful: $reservationDetail")
                 _reservation.value = reservationDetail
             } catch (e: Exception) {
+                Log.e("DetailBooking", "Error in loadReservationDetail", e)
+                e.printStackTrace() // 스택 트레이스 출력
                 ToastUtils.showShortToast(context, e.message ?: "예매 상세 정보 조회에 실패했습니다. 다시 시도해주세요.")
-                Log.e("ReservationDetail", "Error loading curation detail", e)
             } finally {
                 _isLoading.value = false
+                Log.d("DetailBooking", "Loading completed")
             }
         }
     }

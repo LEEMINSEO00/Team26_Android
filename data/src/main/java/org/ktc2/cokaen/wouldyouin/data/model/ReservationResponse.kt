@@ -75,7 +75,7 @@ data class ReservationEventResponse(
     @SerializedName("price")
     val price: Int,
 
-    @SerializedName("Location")
+    @SerializedName("location")
     val location: Location,
 
     @SerializedName("thumbnailUrl")

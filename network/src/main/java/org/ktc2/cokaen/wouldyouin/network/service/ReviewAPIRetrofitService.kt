@@ -15,7 +15,7 @@ interface ReviewAPIRetrofitService {
         @Body reviewRequest: ReviewCreateRequest
     ): Response<ApiResponseBodyReviewResponse>
 
-    @GET("/api/reviews")
+    @GET("/api/reviews/events")
     suspend fun getReviewEvents(
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 10,

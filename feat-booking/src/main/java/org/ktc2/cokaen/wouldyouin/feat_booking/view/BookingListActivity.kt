@@ -1,8 +1,10 @@
 package org.ktc2.cokaen.wouldyouin.feat_booking.view
 
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -86,6 +88,25 @@ class BookingListActivity : AppCompatActivity() {
                 )
             )
 
+            addItemDecoration(object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                    outRect: Rect,
+                    view: View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+                    // 원하는 간격을 dp 단위로 설정
+                    val spacing = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        8f, // 8dp
+                        resources.displayMetrics
+                    ).toInt()
+
+                    outRect.top = spacing
+                    outRect.bottom = spacing
+                }
+            })
+
             bookingAdapter.setOnItemClickListener { reservation ->
                 startActivityTo(reservation.id)
             }
@@ -109,15 +130,13 @@ class BookingListActivity : AppCompatActivity() {
     }
 
     private fun startActivityTo(reservationId: Long) {
-        navigationUtil.navigate(
-            NavigationCommand(
-                destination = NavigationDestination.Activity(DeepLinkDestinations.DETAIL_CURATION_DEEPLINK),
-                activityOptions = ActivityNavigationOptions(
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK,
-                    clearTop = true
-                ),
-                data = mapOf("reservationId" to reservationId.toString())
+        val command = NavigationCommand(
+            destination = NavigationDestination.Activity(DeepLinkDestinations.DETAIL_BOOKING_ACTIVITY),
+            data = mapOf("reservationId" to reservationId.toString()),
+            activityOptions = ActivityNavigationOptions(
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
             )
         )
+        navigationUtil.navigate(command)
     }
 }

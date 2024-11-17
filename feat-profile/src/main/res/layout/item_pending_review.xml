@@ -42,6 +42,7 @@
                 android:textStyle="bold"
                 android:maxLines="2"
                 android:ellipsize="end"
+                android:text="@{review.title}"
                 app:layout_constraintStart_toEndOf="@id/eventImageView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -59,7 +60,7 @@
                 app:layout_constraintTop_toBottomOf="@id/eventNameTextView"
                 tools:text="2024.01.01" />
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/writeReviewButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,7 +69,8 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/eventDateTextView"
-                style="@style/Widget.Material3.Button.OutlinedButton" />
+                android:background="@drawable/rounded_background_button"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
