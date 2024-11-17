@@ -9,7 +9,7 @@ class HashtagAdapter(private val hashtags: List<String>) :
     RecyclerView.Adapter<HashtagAdapter.HashtagViewHolder>()  {
     inner class HashtagViewHolder(private val binding: HashtagItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(hashtag: String) {
-            binding.hashtag.text = hashtag
+            binding.hashtag.text = "#${hashtag}"
         }
     }
 
