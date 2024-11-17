@@ -50,7 +50,7 @@ class BookingActivity : AppCompatActivity() {
             }
             eventResponse?.data?.let { event ->
                 Log.d("BookingActivity", "Event fetched successfully: $event")
-                binding.imageUrl = event.images[0]
+                binding.imageUrl = event.thumbnailUrl
                 binding.eventName.text = event.title
                 binding.eventOrganizerName.text = event.host.nickname
                 binding.eventLocation.text = event.location.detailAddress
@@ -84,19 +84,29 @@ class BookingActivity : AppCompatActivity() {
                 Log.d("BookingActivity", "RequestWrapper: $reservationRequest")
 
                 reservationViewModel.createReservation(reservationRequest)
+                Log.d("BookingActivity", "Request Body: $reservationRequest")
+
 
                 reservationViewModel.reservationResponse.observe(this) { response ->
                     if (response?.success == true) {
                         Log.d("BookingActivity", "Reservation created successfully: ${response.data}")
                         val reservationId = response.data?.id
+                        Log.d("BookingActivity", "ReservationId to pass: $reservationId")
+
                         if (reservationId != null) {
+                            /*
                             reservationId?.let {
                                 Log.d("BookingActivity", "Navigating to BookingDetailsActivity with reservationId: $reservationId")
                                 val intent = Intent(this, BookingDetailsActivity::class.java).apply {
-                                    putExtra("reservationId", reservationId)
+                                    putExtra("reservationId", reservationId.toString())
                                 }
                                 startActivity(intent)
+                            }*/
+                            val intent = Intent(this, BookingDetailsActivity::class.java).apply {
+                                putExtra("reservationId", reservationId.toString())
                             }
+                            Log.d("BookingActivity", "Passing ReservationId to Intent: $reservationId")
+                            startActivity(intent)
                         } else {
                             Log.e("BookingActivity", "ReservationId is null")
                         }
