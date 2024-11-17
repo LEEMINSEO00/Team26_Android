@@ -35,9 +35,8 @@ interface ReservationAPIRetrofitService {
     //카카오 결제
     @POST("/api/reservations")
     suspend fun createKakaoPay(
-        @Query("memberId") memberId: Long = 18,
         @Body request: ReservationRequest
-    ): Response<ApiResponseBodyKakaoPayReservationResponse>
+    ): Response<ResponseBody> //Response<String>
 
     @GET("/api/reservations/{reservationId}")
     suspend fun getReservation(

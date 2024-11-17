@@ -57,13 +57,14 @@ class BookingDetailsActivity : AppCompatActivity() {
                         finish()
                     }
 
-//                    cancelButton.setOnClickListener {
-//                        intent.getStringExtra("reservationId")?.toLongOrNull()?.let { id ->
-//                            viewModel.deleteReservation(reservation.id)
-//                            ToastUtils.showShortToast(this,"예매 취소가 완료되었습니다.")
-//                            finish()
-//                        }
-//                    }
+                    /*
+                    cancelButton.setOnClickListener {
+                        intent.getStringExtra("reservationId")?.toLongOrNull()?.let { id ->
+                            viewModel.deleteReservation(reservation.id, reservation.event.startTime)
+                            ToastUtils.showShortToast(this@BookingDetailsActivity,"예매 취소가 완료되었습니다.")
+                            finish()
+                        }
+                    }*/
                 }
             }
         }

@@ -76,11 +76,13 @@ open class ReservationAPIRetrofitRepository @Inject constructor(
     }
 
     //카카오 결제
-    suspend fun createKakaoPay(memberId: Long, request: ReservationRequest): ApiResponseBodyKakaoPayReservationResponse? {
+    suspend fun createKakaoPay(request: ReservationRequest): String? {  //API 보고 타입 결정
         return try {
-            val response = retrofitService.createKakaoPay(memberId, request)
+            val response = retrofitService.createKakaoPay(request)
             if (response.isSuccessful) {
-                response.body()
+                //원본
+                //response.body()
+                response.body()?.string()
             } else {
                 Log.e("ReservationRepository", "Error creating reservation: ${response.errorBody()?.string()}")
                 null

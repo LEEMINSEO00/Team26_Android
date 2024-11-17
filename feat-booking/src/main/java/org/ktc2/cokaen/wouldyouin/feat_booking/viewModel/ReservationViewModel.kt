@@ -48,8 +48,8 @@ class ReservationViewModel @Inject constructor(
     val reservationResponse: LiveData<ApiResponseBodyReservationResponse?> get() = _reservationResponse
 
     // 카카오 결제
-    private val _payResponse = MutableLiveData<ApiResponseBodyKakaoPayReservationResponse?>()
-    val payResponse: LiveData<ApiResponseBodyKakaoPayReservationResponse?> get() = _payResponse
+    private val _payResponse = MutableLiveData<String?>()
+    val payResponse: LiveData<String?> get() = _payResponse
 
     // 전체 예약 목록을 가져오는 메서드
     fun fetchReservationList(page: Int = currentPage, size: Int = 10) {
@@ -91,13 +91,25 @@ class ReservationViewModel @Inject constructor(
     }
 
     // 카카오 결제
-    fun createKakaoPay(memberId: Long, request: ReservationRequest) {
+    fun createKakaoPay(request: ReservationRequest) {
         viewModelScope.launch {
-            val response = repository.createKakaoPay(memberId, request)
-            _payResponse.value = response
-            Log.d("ReservationViewModel", "Request Body JSON: $request")
-            if (response == null) {
-                Log.e("ReservationViewModel", "Response is null")
+            try {
+                val response = repository.createKakaoPay(request)
+                _payResponse.value = response
+                /*
+                //원본
+                Log.d("ReservationViewModel", "Request Body JSON: $request")
+                if (response == null) {
+                    Log.e("ReservationViewModel", "Response is null")
+                }*/
+                if (!response.isNullOrEmpty()) {
+                    _payResponse.value = response // 단순 URL을 LiveData에 저장
+                    Log.d("ReservationViewModel", "Redirect URL: $response")
+                } else {
+                    Log.e("ReservationViewModel", "Redirect URL is null or empty")
+                }
+            } catch (e: Exception) {
+                Log.e("ReservationViewModel", "Error in createKakaoPay", e)
             }
 
         }
