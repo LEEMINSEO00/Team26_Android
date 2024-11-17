@@ -22,10 +22,12 @@ import org.ktc2.cokaen.wouldyouin.core_navigation.DeepLinkDestinations
 import org.ktc2.cokaen.wouldyouin.core_navigation.NavigationCommand
 import org.ktc2.cokaen.wouldyouin.core_navigation.NavigationDestination
 import org.ktc2.cokaen.wouldyouin.core_navigation.NavigationUtil
+import org.ktc2.cokaen.wouldyouin.data.model.MemberType
 import org.ktc2.cokaen.wouldyouin.feat_curation.R
 import org.ktc2.cokaen.wouldyouin.feat_curation.adapter.CurationCardAdapter
 import org.ktc2.cokaen.wouldyouin.feat_curation.databinding.FragmentHomeCurationBinding
 import org.ktc2.cokaen.wouldyouin.feat_curation.viewModel.HomeCurationViewModel
+import org.ktc2.cokaen.wouldyouin.network.AuthPreferenceManager
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -39,6 +41,10 @@ class HomeCurationFragment : Fragment() {
 
     private var _binding: FragmentHomeCurationBinding? = null
     private val binding get() = _binding!!
+
+    @Inject
+    lateinit var authPrefs: AuthPreferenceManager
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -73,6 +79,7 @@ class HomeCurationFragment : Fragment() {
             }
         })
 
+        binding.createCurationButton.visibility = if (authPrefs.memberType == MemberType.curator.name) View.VISIBLE else View.GONE
 
         // RecyclerView에 Adapter 설정
         binding.curationCard.apply {

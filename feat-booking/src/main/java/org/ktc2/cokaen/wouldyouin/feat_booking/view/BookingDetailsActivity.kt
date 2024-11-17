@@ -40,37 +40,43 @@ class BookingDetailsActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        viewModel.reservation.observe(this) { reservation ->
-            reservation?.let {
-                binding.apply {
-                    imageUrl = it.event.thumbnailUrl
-                    eventName.text = it.event.title
-                    eventLocation.text = it.event.location.detailAddress
-                    eventDate.text = DateTimeUtils.formatDetailTimeString(it.event.startTime)
-                    paymentDate.text = DateTimeUtils.formatDetailTimeString(it.reservationDate)
-                    paymentAmount.text = "₩${it.price}"
-                    reservationNumber.text = it.id.toString()
-                    bookerName.text = it.member.nickname
-                    ticketQuantity.text = it.quantity.toString()
+        viewModel.reservation.observe(this) { currentReservation ->
+            currentReservation?.let { reservation ->
+                viewModel.reservation.observe(this) { currentReservation ->
+                    currentReservation?.let { reservation ->
+                        binding.apply {
+                            imageUrl = reservation.event.thumbnailUrl
+                            eventName.text = reservation.event.title
+                            eventLocation.text = reservation.event.location.detailAddress
+                            eventDate.text = DateTimeUtils.formatDetailTimeString(reservation.event.startTime)
+                            paymentDate.text = "${DateTimeUtils.formatDetailTimeString(reservation.reservationDate)} 예매"
+                            paymentAmount.text = "₩${reservation.price}"
+                            reservationNumber.text = reservation.id.toString()
+                            bookerName.text = reservation.member.nickname
+                            ticketQuantity.text = reservation.quantity.toString()
 
-                    btnBack.setOnClickListener {
-                        finish()
-                    }
-
-                    /*
-                    cancelButton.setOnClickListener {
-                        intent.getStringExtra("reservationId")?.toLongOrNull()?.let { id ->
-                            viewModel.deleteReservation(reservation.id, reservation.event.startTime)
-                            ToastUtils.showShortToast(this@BookingDetailsActivity,"예매 취소가 완료되었습니다.")
-                            finish()
+                            btnBack.setOnClickListener {
+                                finish()
+                            }
                         }
-                    }*/
+
+                        // binding.apply 밖으로 이동
+                        binding.cancelButton.setOnClickListener {
+                            intent.getStringExtra("reservationId")?.toLongOrNull()?.let { id ->
+                                viewModel?.deleteReservation(id, reservation.event.startTime)  // null-safe 호출로 변경
+                            }
+                        }
+                    }
                 }
+            }
+        }
+        viewModel.deletionSuccess.observe(this) { success ->
+            if (success) {
+                finish()  // 성공했을 때만 화면을 닫음
             }
         }
 
         viewModel.isLoading.observe(this) { isLoading ->
-            // 로딩 상태에 따른 UI 처리
             binding.progressBar?.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
     }

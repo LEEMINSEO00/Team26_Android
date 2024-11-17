@@ -365,6 +365,8 @@ class CreateCurationViewModel @Inject constructor(
                         eventIds = eventIds
                     )
 
+                Log.d("RequestBody", "${requestBody}")
+
                 val curationResponse = curationRepository.createCuration(requestBody)
 
                 val curationEntity = CurationEntity(

@@ -86,7 +86,7 @@
                         android:text="@{curation.title}"
                         tools:text="title here"
                         android:textColor="@android:color/white"
-                        android:textSize="32sp"
+                        android:textSize="30sp"
                         android:textStyle="bold"
                         android:ellipsize="end"
                         android:maxLines="1"

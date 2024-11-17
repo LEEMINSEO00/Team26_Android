@@ -65,11 +65,14 @@ class HostProfileActivity : AppCompatActivity() {
                 binding.email.text = member.email
 
                 // 해시태그 리사이클러뷰
-                setupHashtagRecyclerView(member.hashtags)
+                member.hashtags?.let { hashtags ->
+                    setupHashtagRecyclerView(hashtags)
+                }
 
                 //프로필 이미지
                 binding.imageUrl = member.profileUrl
                 //관객 리뷰(리사이클러뷰)
+
             }
         }
 

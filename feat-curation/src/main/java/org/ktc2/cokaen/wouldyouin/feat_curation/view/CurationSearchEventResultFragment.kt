@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,8 +26,8 @@ import org.ktc2.cokaen.wouldyouin.feat_curation.viewModel.CurationSearchViewMode
 class CurationSearchResultFragment : DialogFragment() {
 
     private lateinit var binding: FragmentCurationSearchEventResultBinding
-    private val viewModel: CurationSearchViewModel by viewModels()
     private lateinit var eventAdapter: EventSearchAdapter
+    private val viewModel: CurationSearchViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

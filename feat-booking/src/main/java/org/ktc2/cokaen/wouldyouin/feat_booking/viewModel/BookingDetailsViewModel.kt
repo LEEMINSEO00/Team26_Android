@@ -55,6 +55,9 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     // ViewModel에서:
+    private val _deletionSuccess = MutableLiveData<Boolean>()
+    val deletionSuccess: LiveData<Boolean> = _deletionSuccess
+
     fun deleteReservation(reservationId: Long, eventStartTime: List<String>) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -65,15 +68,18 @@ class BookingDetailsViewModel @Inject constructor(
 
                 if (hoursDifference >= 3) {
                     val success = reservationRepository.deleteReservation(reservationId)
+                    _deletionSuccess.value = success  // 성공/실패 상태 업데이트
                     if (success) {
                         ToastUtils.showShortToast(context, "예매가 취소되었습니다.")
                     } else {
                         ToastUtils.showShortToast(context, "예매 취소에 실패했습니다. 다시 시도해 주세요")
                     }
                 } else {
+                    _deletionSuccess.value = false
                     ToastUtils.showShortToast(context, "공연 시작 3시간 전까지만 예매 취소가 가능합니다.")
                 }
             } catch (e: Exception) {
+                _deletionSuccess.value = false
                 ToastUtils.showShortToast(context, e.message ?: "예매 취소에 실패했습니다. 다시 시도해 주세요")
             } finally {
                 _isLoading.value = false

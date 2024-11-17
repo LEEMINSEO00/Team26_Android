@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import androidx.activity.viewModels
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,9 +68,11 @@ class CuratorProfileActivity : AppCompatActivity() {
     }
 
     private fun setupObservers(curatorId: Long?) {
-        // ViewModel의 데이터를 관찰하여 UI 업데이트
         profileViewModel.memberProfile.observe(this) { memberResponse ->
             memberResponse?.data?.let { member ->
+                // 여기서 hashtags 확인
+                Log.d("CuratorProfile", "Member hashtags: ${member.hashtags}")
+
                 binding.nickname.text = member.nickname
                 binding.role.text = member.memberType
                 binding.likes.text = member.likes.toString()
@@ -78,7 +82,10 @@ class CuratorProfileActivity : AppCompatActivity() {
                 //프로필 이미지
                 binding.imageUrl = member.profileUrl
 
-                setupHashtagRecyclerView(member.hashtags)
+                // null이 아닌 경우에만 호출
+                member.hashtags?.let { hashtags ->
+                    setupHashtagRecyclerView(hashtags)
+                }
             }
         }
 
@@ -92,14 +99,17 @@ class CuratorProfileActivity : AppCompatActivity() {
     }
 
     private fun setupHashtagRecyclerView(hashtags: List<String>) {
-        val hashtagAdapter = HashtagAdapter(hashtags)
-        binding.hashtag.apply {
-            layoutManager = LinearLayoutManager(
-                this@CuratorProfileActivity,
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
-            adapter = hashtagAdapter
+        // null 체크 추가
+        if (hashtags.isNotEmpty()) {
+            val hashtagAdapter = HashtagAdapter(hashtags)
+            binding.hashtag.apply {
+                layoutManager = LinearLayoutManager(
+                    this@CuratorProfileActivity,
+                    LinearLayoutManager.HORIZONTAL,
+                    false
+                )
+                adapter = hashtagAdapter
+            }
         }
     }
 
@@ -107,17 +117,15 @@ class CuratorProfileActivity : AppCompatActivity() {
         val curationAdapter = CurationAdapter(curations)
         binding.posts.apply {
             adapter = curationAdapter
-            layoutManager = LinearLayoutManager(
+            // GridLayoutManager로 변경하고 spanCount를 2로 설정하여 2열로 표시
+            layoutManager = GridLayoutManager(
                 this@CuratorProfileActivity,
-                LinearLayoutManager.HORIZONTAL,
+                2,  // 2열로 설정
+                GridLayoutManager.VERTICAL,  // 세로 스크롤로 변경
                 false
             )
-            addItemDecoration(
-                DividerItemDecoration(
-                    this@CuratorProfileActivity,
-                    DividerItemDecoration.HORIZONTAL
-                )
-            )
+
+            // 아이템 간격 설정
             addItemDecoration(object : RecyclerView.ItemDecoration() {
                 override fun getItemOffsets(
                     outRect: Rect,
@@ -125,15 +133,22 @@ class CuratorProfileActivity : AppCompatActivity() {
                     parent: RecyclerView,
                     state: RecyclerView.State
                 ) {
-                    // 원하는 간격을 dp 단위로 설정
                     val spacing = TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
                         8f, // 8dp
                         resources.displayMetrics
                     ).toInt()
 
+                    // 모든 방향에 spacing 적용
+                    outRect.left = spacing
+                    outRect.right = spacing
                     outRect.top = spacing
                     outRect.bottom = spacing
+
+                    // 첫 번째 행의 아이템들에 대해 상단 여백 추가
+                    if (parent.getChildLayoutPosition(view) < 2) {
+                        outRect.top = spacing * 2
+                    }
                 }
             })
 
@@ -141,14 +156,16 @@ class CuratorProfileActivity : AppCompatActivity() {
                 startActivityTo(curation.id)
             }
 
+            // 무한 스크롤 설정
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
-                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val layoutManager = recyclerView.layoutManager as GridLayoutManager
                     val totalItemCount = layoutManager.itemCount
-                    val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
+                    val lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition()
 
-                    if (!curationViewModel.isLoading.value && totalItemCount <= lastVisibleItem + 5) {
+                    // 스크롤이 끝에 도달하기 전에 추가 데이터 로드
+                    if (!curationViewModel.isLoading.value && totalItemCount <= lastVisibleItem + 4) {
                         curationViewModel.loadCurations(curatorId)
                     }
                 }
