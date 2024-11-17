@@ -58,7 +58,7 @@ class HostLikesFragment : Fragment() {
         }
 
         // 클릭 이벤트 처리
-        adapter.onItemClick = { member ->
+        adapter.onHeartClick = { member ->
             lifecycleScope.launch {
                 val success = viewModel.postLike(member.memberId, MemberType.host)
                 if (success) {

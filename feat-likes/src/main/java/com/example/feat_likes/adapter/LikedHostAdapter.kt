@@ -16,7 +16,7 @@ class LikedHostAdapter :
     ListAdapter<LikeResponse, LikedHostAdapter.MemberViewHolder>(LikeResponseDiffCallback()) {
 
     var onItemClick: ((LikeResponse) -> Unit)? = null
-    var onLikeClick: ((Member) -> Unit)? = null
+    var onHeartClick: ((LikeResponse) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemberViewHolder {
         val binding = LikedOrganizerItemBinding.inflate(
@@ -35,10 +35,6 @@ class LikedHostAdapter :
         private val binding: LikedOrganizerItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        var onHeartClick: ((LikeResponse) -> Unit)? = null
-        var onItemClick: ((LikeResponse) -> Unit)? = null
-
-
         fun bind(member: LikeResponse) {
             binding.apply {
                 organizerName.text = member.nickname
@@ -49,8 +45,8 @@ class LikedHostAdapter :
                 hashtag.layoutManager = LinearLayoutManager(root.context, LinearLayoutManager.HORIZONTAL, false)
 
                 // 하트 버튼 클릭
-                heartButton.setOnClickListener {
-                    onHeartClick?.invoke(member)  // onHeartClick 사용
+                binding.heartButton.setOnClickListener {
+                    onHeartClick?.invoke(member)  // ❌ ViewHolder 내부의 지역 변수 사용
                 }
 
                 // 프로필 클릭
