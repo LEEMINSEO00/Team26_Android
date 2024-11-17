@@ -75,21 +75,25 @@ class BookingActivity : AppCompatActivity() {
             }
         }
 
+        //결제 결과
         binding.payButton.setOnClickListener {
             eventId?.let { id ->
                 val quantity = binding.numberPicker.value
                 val reservationRequest = ReservationRequest(eventId = id, quantity = quantity)
                 //val requestWrapper = ReservationCreateRequestWrapper(reservationRequest = reservationRequest)
-                val memberId = 18L
+                //val memberId = 18L
 
                 Log.d("BookingActivity", "RequestWrapper: $reservationRequest")
 
                 /*
-                reservationViewModel.createReservation(memberId, reservationRequest)
-                Log.d("BookingActivity", "Request Body: $reservationRequest")*/
                 // 카카오 결제 API 호출
-                reservationViewModel.createReservation(memberId, reservationRequest)
+                reservationViewModel.createKakaoPay(memberId, reservationRequest)
                 Log.d("BookingActivity", "Request Body: $reservationRequest")
+                */
+
+                reservationViewModel.createReservation(reservationRequest)
+                Log.d("BookingActivity", "Request Body: $reservationRequest")
+
 
 
                 reservationViewModel.reservationResponse.observe(this) { response ->
@@ -97,6 +101,7 @@ class BookingActivity : AppCompatActivity() {
                     if (response?.success == true) {
                         Log.d("BookingActivity", "Reservation created successfully: ${response.data}")
                         val reservationId = response.data?.id
+                        //val reservationId = response.data?.reservationResponse?.id
                         Log.d("BookingActivity", "ReservationId to pass: $reservationId")
 
                         if (reservationId != null) {
@@ -124,7 +129,27 @@ class BookingActivity : AppCompatActivity() {
                 }
             }
         }
+
     }
+    /*
+    private fun launchExternalBrowser(oauthUrl: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(oauthUrl))
+        startActivity(intent)
+    }*/
+
+    /*
+    override fun onResume() {
+        super.onResume()
+        val reservationId = intent.getStringExtra("reservationId")
+        if (!reservationId.isNullOrEmpty()) {
+            val intent = Intent(this, BookingDetailsActivity::class.java).apply {
+                putExtra("reservationId", reservationId)
+            }
+            startActivity(intent)
+            Log.d("BookingActivity", "Navigating to BookingDetailsActivity with reservationId: $reservationId")
+        }
+    }*/
+
 
     private fun updateTotalPrice(quantity: Int, pricePerTicket: Int) {
         totalPrice = quantity * pricePerTicket

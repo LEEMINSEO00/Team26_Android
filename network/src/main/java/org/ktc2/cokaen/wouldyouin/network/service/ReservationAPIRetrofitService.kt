@@ -28,7 +28,7 @@ interface ReservationAPIRetrofitService {
     // 예매 생성
     @POST("/api/reservations/test")
     suspend fun createReservation(
-        @Query("memberId") memberId: Long = 18,
+        //@Query("memberId") memberId: Long = 18,
         @Body request: ReservationRequest
     ): Response<ApiResponseBodyReservationResponse>
 

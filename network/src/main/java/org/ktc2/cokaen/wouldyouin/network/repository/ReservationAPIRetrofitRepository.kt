@@ -60,9 +60,9 @@ open class ReservationAPIRetrofitRepository @Inject constructor(
     }
 
     // 예매 생성
-    suspend fun createReservation(memberId: Long, request: ReservationRequest): ApiResponseBodyReservationResponse? {
+    suspend fun createReservation(request: ReservationRequest): ApiResponseBodyReservationResponse? {
         return try {
-            val response = retrofitService.createReservation(memberId, request)
+            val response = retrofitService.createReservation(request)
             if (response.isSuccessful) {
                 response.body()
             } else {
