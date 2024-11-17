@@ -3,6 +3,7 @@ package org.ktc2.cokaen.wouldyouin.network.repository
 import android.content.Context
 import android.util.Log
 import org.ktc2.cokaen.wouldyouin.core.ToastUtils
+import org.ktc2.cokaen.wouldyouin.data.model.ApiResponseBodyKakaoPayReservationResponse
 import org.ktc2.cokaen.wouldyouin.data.model.ApiResponseBodyReservationResponse
 import org.ktc2.cokaen.wouldyouin.data.model.CurationResponse
 import org.ktc2.cokaen.wouldyouin.data.model.CurationSliceResponse
@@ -59,9 +60,25 @@ open class ReservationAPIRetrofitRepository @Inject constructor(
     }
 
     // 예매 생성
-    suspend fun createReservation(request: ReservationRequest): ApiResponseBodyReservationResponse? {
+    suspend fun createReservation(memberId: Long, request: ReservationRequest): ApiResponseBodyReservationResponse? {
         return try {
-            val response = retrofitService.createReservation(request)
+            val response = retrofitService.createReservation(memberId, request)
+            if (response.isSuccessful) {
+                response.body()
+            } else {
+                Log.e("ReservationRepository", "Error creating reservation: ${response.errorBody()?.string()}")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("ReservationRepository", "Exception creating reservation", e)
+            null
+        }
+    }
+
+    //카카오 결제
+    suspend fun createKakaoPay(memberId: Long, request: ReservationRequest): ApiResponseBodyKakaoPayReservationResponse? {
+        return try {
+            val response = retrofitService.createKakaoPay(memberId, request)
             if (response.isSuccessful) {
                 response.body()
             } else {
@@ -141,60 +158,3 @@ open class ReservationAPIRetrofitRepository @Inject constructor(
         }
     }
 }
-
-//// 예매 생성
-//open suspend fun createReservation(
-//    reservationRequest: ReservationRequest,
-//    context: Context
-//): ReservationResponse? {
-//    return try {
-//        val response = retrofitService.createReservation(reservationRequest)
-//        if (response.isSuccessful) {
-//            response.body()
-//        } else {
-//            ToastUtils.showShortToast(context, "예매 생성에 실패했습니다.")
-//            null
-//        }
-//    } catch (e: Exception) {
-//        ToastUtils.showShortToast(context, "오류 발생: ${e.message}")
-//        null
-//    }
-//}
-//
-//// 특정 예매 조회
-//open suspend fun getReservationDetails(
-//    reservationId: String,
-//    context: Context
-//): ReservationResponse? {
-//    return try {
-//        val response = retrofitService.getReservationDetails(reservationId)
-//        if (response.isSuccessful) {
-//            response.body()
-//        } else {
-//            ToastUtils.showShortToast(context, "예매 조회에 실패했습니다.")
-//            null
-//        }
-//    } catch (e: Exception) {
-//        ToastUtils.showShortToast(context, "오류 발생: ${e.message}")
-//        null
-//    }
-//}
-//
-//// 예매 취소
-//open suspend fun cancelReservation(
-//    reservationId: String,
-//    context: Context
-//): Boolean {
-//    return try {
-//        val response = retrofitService.cancelReservation(reservationId)
-//        if (response.isSuccessful) {
-//            true
-//        } else {
-//            ToastUtils.showShortToast(context, "예매 취소에 실패했습니다.")
-//            false
-//        }
-//    } catch (e: Exception) {
-//        ToastUtils.showShortToast(context, "오류 발생: ${e.message}")
-//        false
-//    }
-//}

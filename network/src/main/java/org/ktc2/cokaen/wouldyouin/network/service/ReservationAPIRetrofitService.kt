@@ -1,6 +1,7 @@
 package org.ktc2.cokaen.wouldyouin.network.service
 
 import okhttp3.ResponseBody
+import org.ktc2.cokaen.wouldyouin.data.model.ApiResponseBodyKakaoPayReservationResponse
 import org.ktc2.cokaen.wouldyouin.data.model.ApiResponseBodyReservationResponse
 import org.ktc2.cokaen.wouldyouin.data.model.ApiResponseBodyReservationSliceResponse
 import org.ktc2.cokaen.wouldyouin.data.model.ReservationCreateRequestWrapper
@@ -27,8 +28,16 @@ interface ReservationAPIRetrofitService {
     // 예매 생성
     @POST("/api/reservations/test")
     suspend fun createReservation(
+        @Query("memberId") memberId: Long = 18,
         @Body request: ReservationRequest
     ): Response<ApiResponseBodyReservationResponse>
+
+    //카카오 결제
+    @POST("/api/reservations")
+    suspend fun createKakaoPay(
+        @Query("memberId") memberId: Long = 18,
+        @Body request: ReservationRequest
+    ): Response<ApiResponseBodyKakaoPayReservationResponse>
 
     @GET("/api/reservations/{reservationId}")
     suspend fun getReservation(
@@ -40,16 +49,4 @@ interface ReservationAPIRetrofitService {
         @Path("reservationId") reservationId: Long
     ): Response<ResponseBody>
 
-
-//    // 특정 예매 조회
-//    @GET("api/reservations/{reservationId}")
-//    suspend fun getReservationDetails(
-//        @Path("reservationId") reservationId: String
-//    ): Response<ReservationResponse>
-
-//    // 예매 취소
-//    @DELETE("api/reservations/{reservationId}")
-//    suspend fun cancelReservation(
-//        @Path("reservationId") reservationId: String
-//    ): Response<Unit>
 }

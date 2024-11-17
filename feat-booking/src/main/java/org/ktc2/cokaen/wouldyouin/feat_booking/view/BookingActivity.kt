@@ -80,14 +80,20 @@ class BookingActivity : AppCompatActivity() {
                 val quantity = binding.numberPicker.value
                 val reservationRequest = ReservationRequest(eventId = id, quantity = quantity)
                 //val requestWrapper = ReservationCreateRequestWrapper(reservationRequest = reservationRequest)
+                val memberId = 18L
 
                 Log.d("BookingActivity", "RequestWrapper: $reservationRequest")
 
-                reservationViewModel.createReservation(reservationRequest)
+                /*
+                reservationViewModel.createReservation(memberId, reservationRequest)
+                Log.d("BookingActivity", "Request Body: $reservationRequest")*/
+                // 카카오 결제 API 호출
+                reservationViewModel.createReservation(memberId, reservationRequest)
                 Log.d("BookingActivity", "Request Body: $reservationRequest")
 
 
                 reservationViewModel.reservationResponse.observe(this) { response ->
+                //reservationViewModel.payResponse.observe(this) { response ->
                     if (response?.success == true) {
                         Log.d("BookingActivity", "Reservation created successfully: ${response.data}")
                         val reservationId = response.data?.id

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.ktc2.cokaen.wouldyouin.core.ToastUtils
+import org.ktc2.cokaen.wouldyouin.data.model.ApiResponseBodyKakaoPayReservationResponse
 import org.ktc2.cokaen.wouldyouin.data.model.ApiResponseBodyReservationResponse
 import org.ktc2.cokaen.wouldyouin.data.model.ReservationCreateRequestWrapper
 import org.ktc2.cokaen.wouldyouin.data.model.ReservationRequest
@@ -46,6 +47,10 @@ class ReservationViewModel @Inject constructor(
     private val _reservationResponse = MutableLiveData<ApiResponseBodyReservationResponse?>()
     val reservationResponse: LiveData<ApiResponseBodyReservationResponse?> get() = _reservationResponse
 
+    // 카카오 결제
+    private val _payResponse = MutableLiveData<ApiResponseBodyKakaoPayReservationResponse?>()
+    val payResponse: LiveData<ApiResponseBodyKakaoPayReservationResponse?> get() = _payResponse
+
     // 전체 예약 목록을 가져오는 메서드
     fun fetchReservationList(page: Int = currentPage, size: Int = 10) {
         if (isLoading.value == true || isLastPage) return
@@ -73,9 +78,9 @@ class ReservationViewModel @Inject constructor(
     }
 
     // 예매 생성
-    fun createReservation(request: ReservationRequest) {
+    fun createReservation(memberId: Long, request: ReservationRequest) {
         viewModelScope.launch {
-            val response = repository.createReservation(request)
+            val response = repository.createReservation(memberId, request)
             _reservationResponse.value = response
             Log.d("ReservationViewModel", "Request Body JSON: $request")
             if (response == null) {
@@ -85,24 +90,16 @@ class ReservationViewModel @Inject constructor(
         }
     }
 
-//    // 특정 예약의 상세 정보를 가져오는 메서드
-//    fun fetchReservationDetails(reservationId: String, context: Context) {
-//        viewModelScope.launch {
-//            _reservationDetails.value = repository.getReservationDetails(reservationId, context)
-//        }
-//    }
-//
-//    // 새로운 예약을 생성하는 메서드
-//    fun createReservation(reservationRequest: ReservationRequest, context: Context) {
-//        viewModelScope.launch {
-//            _operationSuccess.value = repository.createReservation(reservationRequest, context) != null
-//        }
-//    }
-//
-//    // 예약을 취소하는 메서드
-//    fun cancelReservation(reservationId: String, context: Context) {
-//        viewModelScope.launch {
-//            _operationSuccess.value = repository.cancelReservation(reservationId, context)
-//        }
-//    }
+    // 카카오 결제
+    fun createKakaoPay(memberId: Long, request: ReservationRequest) {
+        viewModelScope.launch {
+            val response = repository.createKakaoPay(memberId, request)
+            _payResponse.value = response
+            Log.d("ReservationViewModel", "Request Body JSON: $request")
+            if (response == null) {
+                Log.e("ReservationViewModel", "Response is null")
+            }
+
+        }
+    }
 }

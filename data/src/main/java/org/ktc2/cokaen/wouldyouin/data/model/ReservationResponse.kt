@@ -89,3 +89,14 @@ data class ApiResponseBodyReservationResponse(
     val message: String
 )
 
+data class ApiResponseBodyKakaoPayReservationResponse(
+    val success: Boolean,
+    val data: KakaoPayReservationResponse,
+    val code: String,
+    val message: String,
+)
+
+data class KakaoPayReservationResponse(
+    val reservationResponse: ReservationResponse,
+    val kakaoPayResponse: KakaoPayResponse
+)
