@@ -57,7 +57,7 @@ class HostProfileActivity : AppCompatActivity() {
         // ViewModel의 데이터를 관찰하여 UI 업데이트
         profileViewModel.memberProfile.observe(this) { memberResponse ->
             memberResponse?.data?.let { member ->
-                Log.d("HostProfileActivity", "Member data fetched: ${member.hashtag}")
+                Log.d("HostProfileActivity", "Member data fetched: ${member.hashtags}")
                 binding.nickname.text = member.nickname
                 binding.role.text = member.memberType
                 binding.likes.text = member.likes.toString()
@@ -65,7 +65,7 @@ class HostProfileActivity : AppCompatActivity() {
                 binding.email.text = member.email
 
                 // 해시태그 리사이클러뷰
-                setupHashtagRecyclerView(member.hashtag)
+                setupHashtagRecyclerView(member.hashtags)
 
                 //프로필 이미지
                 binding.imageUrl = member.profileUrl

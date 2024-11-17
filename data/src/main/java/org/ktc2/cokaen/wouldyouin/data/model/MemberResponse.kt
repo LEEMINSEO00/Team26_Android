@@ -20,7 +20,7 @@ data class MemberResponse(
     val gender: String,
     val intro: String,
     val likes: Int,
-    val hashtag: List<String>
+    val hashtags: List<String>
 )
 
 enum class MemberType {

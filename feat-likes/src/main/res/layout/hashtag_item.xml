@@ -11,6 +11,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
+        android:layout_marginEnd="3dp"
         android:layout_height="wrap_content">
 
         <TextView
@@ -23,6 +24,8 @@
             android:background="@drawable/hashtag_background"
             tools:text="#hashtag"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -78,7 +78,7 @@ class CuratorProfileActivity : AppCompatActivity() {
                 //프로필 이미지
                 binding.imageUrl = member.profileUrl
 
-                setupHashtagRecyclerView(member.hashtag)
+                setupHashtagRecyclerView(member.hashtags)
             }
         }
 
