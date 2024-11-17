@@ -3,6 +3,7 @@ package org.ktc2.cokaen.wouldyouin.feat_event.view
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -34,6 +35,8 @@ class EventDetailActivity : AppCompatActivity() {
     //행사 위치 변수 추가
     private var eventLatitude: Double? = null
     private var eventLongitude: Double? = null
+    private var kakaoMap: KakaoMap? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +63,16 @@ class EventDetailActivity : AppCompatActivity() {
                 //행사 위치 정보 설정
                 eventLatitude = event.data?.location?.latitude
                 eventLongitude = event.data?.location?.longitude
+
+                //추가
+                // 지도 업데이트
+                if (eventLatitude != null && eventLongitude != null && mapView.visibility == View.VISIBLE) {
+                    kakaoMap?.moveCamera(
+                        com.kakao.vectormap.camera.CameraUpdateFactory.newCenterPosition(
+                            LatLng.from(eventLatitude!!, eventLongitude!!), 15
+                        )
+                    )
+                }
 
                 //주최자 정보 설정
                 binding.organizerName.text = event.data?.host?.nickname
@@ -91,24 +104,44 @@ class EventDetailActivity : AppCompatActivity() {
         mapView.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
                 // 지도 API가 정상적으로 종료될 때 호출됨
+                Log.d("MapView", "Map is end")
             }
 
             override fun onMapError(error: Exception?) {
                 // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출됨
+                Log.e("MapView", "Map initialization error", error)
             }
         }, object : KakaoMapReadyCallback() {
             override fun onMapReady(kakaoMap: KakaoMap) {
                 // 인증 후 API가 정상적으로 실행될 때 호출됨
+                Log.d("MapView", "Map is ready")
+
+                //추가
+                this@EventDetailActivity.kakaoMap = kakaoMap
+
+                // 지도 초기화 후 위치 설정
+                if (eventLatitude != null && eventLongitude != null) {
+                    Log.d("MapView", "Event Latitude: $eventLatitude, Event Longitude: $eventLongitude")
+                    kakaoMap.moveCamera(
+                        com.kakao.vectormap.camera.CameraUpdateFactory.newCenterPosition(
+                            LatLng.from(eventLatitude!!, eventLongitude!!), 15
+                        )
+                    )
+                } else {
+                    Log.e("MapView", "Event location is not available yet")
+                }
+                /*
                 //행사 위치로 카메라 이동
                 eventLatitude?.let { latitude ->
                     eventLongitude?.let { longitude ->
+                        Log.d("MapView", "Event Latitude: $latitude, Event Longitude: $longitude")
                         kakaoMap.moveCamera(
                             com.kakao.vectormap.camera.CameraUpdateFactory.newCenterPosition(
                                 LatLng.from(latitude, longitude), 15
                             )
                         )
-                    }
-                }
+                    } ?: Log.e("MapView", "Longitude is null")
+                } ?: Log.e("MapView", "Latitude is null") */
             }
         })
     }
@@ -116,6 +149,16 @@ class EventDetailActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         mapView.resume()
+
+        //추가
+        // 지도 상태 갱신
+        if (eventLatitude != null && eventLongitude != null && kakaoMap != null) {
+            kakaoMap?.moveCamera(
+                com.kakao.vectormap.camera.CameraUpdateFactory.newCenterPosition(
+                    LatLng.from(eventLatitude!!, eventLongitude!!), 15
+                )
+            )
+        }
     }
 
     override fun onPause() {
